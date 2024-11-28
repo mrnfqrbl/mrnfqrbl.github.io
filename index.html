@@ -6,32 +6,26 @@
     <title>我的 GitHub Pages 网站</title>
 </head>
 <body>
-<h1>欢迎来到我的 GitHub Pages 网站!</h1>
 
 <!-- 容器显示 GitHub 文件内容 -->
 <div id="fileContent" style="white-space: pre-wrap;"></div>
 
 <script>
-    // 使用 GitHub API 获取文件内容
+    // 请求 GitHub API 获取 nai-2.5d 文件的内容
     fetch('https://api.github.com/repos/mrnfqrbl/sd/contents/nai-2.5d?ref=main')
         .then(response => response.json())
         .then(data => {
-            // 通过 API 获取的文件内容是 Base64 编码的，解码后显示
-            if (data && data.length > 0) {
-                let fileContent = '';
-                data.forEach(file => {
-                    if (file.type === 'file') {
-                        // 获取文件的 Base64 编码内容
-                        const base64Content = file.content;
+            if (data && data.content) {
+                // 获取文件的 Base64 编码内容
+                const base64Content = data.content;
 
-                        // 解码 Base64 内容
-                        const decodedContent = atob(base64Content); // 解码
+                // 解码 Base64 内容
+                const decodedContent = atob(base64Content); // 解码
 
-                        // 显示文件内容
-                        fileContent += `<h2>${file.name}</h2><pre>${decodedContent}</pre>`;
-                        document.getElementById('fileContent').innerHTML = fileContent;
-                    }
-                });
+                // 显示文件内容
+                document.getElementById('fileContent').innerHTML = `<h2>${data.name}</h2><pre>${decodedContent}</pre>`;
+            } else {
+                document.getElementById('fileContent').innerHTML = '文件未找到或内容为空。';
             }
         })
         .catch(error => {
