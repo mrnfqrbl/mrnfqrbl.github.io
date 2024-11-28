@@ -20,7 +20,7 @@
                 const base64Content = data.content;
 
                 // 解码 Base64 内容
-                const decodedContent = atob(base64Content); // 解码
+                const decodedContent = decodeBase64ToUTF8(base64Content);
 
                 // 显示文件内容
                 document.getElementById('fileContent').innerHTML = `<h2>${data.name}</h2><pre>${decodedContent}</pre>`;
@@ -32,6 +32,21 @@
             console.error('获取文件失败:', error);
             document.getElementById('fileContent').innerHTML = '无法加载文件内容。';
         });
+
+    // 解码 Base64 编码并正确解析为 UTF-8 格式
+    function decodeBase64ToUTF8(base64Str) {
+        const binaryData = atob(base64Str);  // 解码 Base64 内容为二进制字符串
+        const byteArray = new Uint8Array(binaryData.length);
+
+        // 将二进制数据转化为字节数组
+        for (let i = 0; i < binaryData.length; i++) {
+            byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        // 使用 TextDecoder 将字节数组解码为 UTF-8 字符串
+        const decoder = new TextDecoder('utf-8');
+        return decoder.decode(byteArray);
+    }
 </script>
 </body>
 </html>
