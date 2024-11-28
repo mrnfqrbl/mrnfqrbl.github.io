@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的 GitHub Pages 网站</title>
 </head>
-<body>
+<body>  
 
 <!-- 容器显示 GitHub 文件内容 -->
 <div id="fileContent" style="white-space: pre-wrap;"></div>
@@ -22,8 +22,11 @@
                 // 解码 Base64 内容
                 const decodedContent = decodeBase64ToUTF8(base64Content);
 
+                // 解析内容并按标题和段落分类
+                const parsedContent = parseContent(decodedContent);
+
                 // 显示文件内容
-                document.getElementById('fileContent').innerHTML = `<h2>${data.name}</h2><pre>${decodedContent}</pre>`;
+                document.getElementById('fileContent').innerHTML = `<h2>${data.name}</h2><div>${parsedContent}</div>`;
             } else {
                 document.getElementById('fileContent').innerHTML = '文件未找到或内容为空。';
             }
@@ -47,6 +50,45 @@
         const decoder = new TextDecoder('utf-8');
         return decoder.decode(byteArray);
     }
+
+    // 解析内容，按##、# 和段落分隔并赋予id
+    function parseContent(content) {
+        const lines = content.split('\n').filter(line => line.trim() !== '');
+
+        let parsedHTML = '';
+        let currentId = 1; // 用于生成唯一的ID
+
+        let currentSectionId = null;
+        let currentSubsectionId = null;
+
+        lines.forEach(line => {
+            // 判断大标题 (##)
+            if (line.startsWith('## ')) {
+                // 添加大标题
+                parsedHTML += `<h2 id="section-${currentId}">${line.substring(3).trim()}</h2>`;
+                currentSectionId = currentId; // 记录当前大标题的ID
+                currentId++; // 增加ID
+            }
+            // 判断小标题 (#)
+            else if (line.startsWith('# ')) {
+                // 添加小标题
+                parsedHTML += `<h3 id="subsection-${currentId}">${line.substring(2).trim()}</h3>`;
+                currentSubsectionId = currentId; // 记录当前小标题的ID
+                currentId++; // 增加ID
+            }
+            // 判断普通段落内容
+            else {
+                if (currentSectionId && currentSubsectionId) {
+                    parsedHTML += `<p id="paragraph-${currentId}">${line.trim()}</p>`;
+                    currentId++; // 增加ID
+                }
+            }
+        });
+
+        console.log("解析后的内容：", parsedHTML); // 打印解析后的内容
+        return parsedHTML;
+    }
 </script>
+
 </body>
 </html>
