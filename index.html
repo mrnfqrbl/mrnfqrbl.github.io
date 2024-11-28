@@ -9,14 +9,43 @@
 <h1>欢迎来到我的 GitHub Pages 网站!</h1>
 <button id="myButton">点击我</button>
 
+<!-- 容器显示 GitHub 文件内容 -->
+<div id="fileContent" style="white-space: pre-wrap;"></div>
+
 <!-- 引入外部 JavaScript 文件 -->
 <script src="index.js"></script>
 
 <script>
-    // 或者你也可以直接在这里编写 JavaScript 代码
+    // 监听按钮点击事件
     document.getElementById('myButton').addEventListener('click', function() {
         alert('你点击了按钮!');
     });
+
+    // 使用 GitHub API 获取文件内容
+    fetch('https://api.github.com/repos/mrnfqrbl/sd/contents/nai-2.5d?ref=main')
+        .then(response => response.json())
+        .then(data => {
+            // 通过 API 获取的文件内容是 base64 编码的，解码后显示
+            if (data && data.length > 0) {
+                let fileContent = '';
+                data.forEach(file => {
+                    if (file.type === 'file') {
+                        // 获取文件的 URL
+                        fetch(file.download_url)
+                            .then(response => response.text())
+                            .then(content => {
+                                // 显示文件内容
+                                fileContent += `<h2>${file.name}</h2><pre>${content}</pre>`;
+                                document.getElementById('fileContent').innerHTML = fileContent;
+                            });
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('获取文件失败:', error);
+            document.getElementById('fileContent').innerHTML = '无法加载文件内容。';
+        });
 </script>
 </body>
 </html>
