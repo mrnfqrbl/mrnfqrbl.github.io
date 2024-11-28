@@ -61,12 +61,15 @@
         let currentSectionId = null;
         let currentSubsectionId = null;
 
-        lines.forEach(line => {
+        lines.forEach((line, index) => {
+            console.log(`解析行 ${index + 1}:`, line); // 打印当前行，便于调试
+
             // 判断大标题 (##)
             if (line.startsWith('## ')) {
                 // 添加大标题
                 parsedHTML += `<h2 id="section-${currentId}">${line.substring(3).trim()}</h2>`;
                 currentSectionId = currentId; // 记录当前大标题的ID
+                console.log(`大标题 (section-${currentId}):`, line.substring(3).trim());
                 currentId++; // 增加ID
             }
             // 判断小标题 (#)
@@ -74,13 +77,17 @@
                 // 添加小标题
                 parsedHTML += `<h3 id="subsection-${currentId}">${line.substring(2).trim()}</h3>`;
                 currentSubsectionId = currentId; // 记录当前小标题的ID
+                console.log(`小标题 (subsection-${currentId}):`, line.substring(2).trim());
                 currentId++; // 增加ID
             }
             // 判断普通段落内容
             else {
                 if (currentSectionId && currentSubsectionId) {
                     parsedHTML += `<p id="paragraph-${currentId}">${line.trim()}</p>`;
+                    console.log(`段落 (paragraph-${currentId}):`, line.trim());
                     currentId++; // 增加ID
+                } else {
+                    console.log(`忽略无标题的段落:`, line.trim());
                 }
             }
         });
