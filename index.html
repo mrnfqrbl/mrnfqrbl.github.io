@@ -1,253 +1,30 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="en">
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的 GitHub Pages 网站</title>
-    <style>
-        /* 通用样式 */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center; /* 使内容居中 */
-        }
+    <title>ComfyUI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script>
+      // 在页面加载时执行
+      document.addEventListener('DOMContentLoaded', function() {
+        // 获取当前页面的 URL (不包含 hash)
+        const currentUrl = window.location.href;
 
-        /* 页面容器 */
-        #fileContent {
-            max-width: 900px; /* 限制最大宽度 */
-            width: 100%; /* 设置为100%宽度，但不超过900px */
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+        // 创建 <base> 标签
+        const base = document.createElement('base');
+        base.href = currentUrl;
 
-        /* 样式：大标题 */
-        h2 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #0078d4;
-        }
-
-        /* 样式：小标题和段落的容器 */
-        .section-content {
-            margin-bottom: 40px;
-        }
-
-        .section-content h3 {
-            color: #555;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .section-content p {
-            font-size: 1em;
-            line-height: 1.6;
-            color: #333;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-left: 4px solid #0078d4;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        /* 样式：代码框 */
-        .code-box {
-            position: relative; /* 给子元素提供相对定位 */
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            padding: 30px 20px 20px 20px; /* 增加顶部边距，给按钮留出空间 */
-            margin-top: 10px;
-            overflow-x: auto; /* 支持横向滚动 */
-            border-top: 10px solid #228B22; /* 添加顶部宽边 */
-            max-height: 400px; /* 设置最大高度，确保按钮能够在滚动时固定 */
-            overflow-y: auto; /* 支持纵向滚动 */
-        }
-
-        /* 按钮样式：位置调整 */
-        .copy-btn {
-            position: sticky;  /* 保持按钮在滚动区域内固定 */
-            top: 10px; /* 按钮距离代码框顶部的距离，调整此值来控制位置 */
-            left: 10px;  /* 距离父容器左侧的距离 */
-            z-index: 10; /* 确保按钮在最上层 */
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: rgba(0, 120, 212, 0.8); /* 半透明的蓝色背景 */
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease; /* 设置背景颜色的过渡效果 */
-        }
-
-        /* 鼠标悬停时的按钮样式 */
-        .copy-btn:hover {
-            background-color: rgba(0, 120, 212, 1);
-        }
-
-
-
-        /* 复制成功提示 */
-        .copy-success {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 20; /* 确保提示显示在按钮之上 */
-        }
-
-        .copy-success.show {
-            opacity: 1;
-        }
-
-        /* 响应式设计：适应小屏设备 */
-        @media screen and (max-width: 600px) {
-            h2 {
-                font-size: 1.6em;
-            }
-
-            .section-content h3 {
-                font-size: 1.3em;
-            }
-
-            .copy-btn {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<!-- 容器显示 GitHub 文件内容 -->
-<div id="fileContent" style="white-space: pre-wrap;"></div>
-
-<!-- 复制成功提示 -->
-<div id="copySuccess" class="copy-success">复制成功！</div>
-
-<script>
-    // 请求 GitHub API 获取 nai-2.5d 文件的内容
-    fetch('https://api.github.com/repos/mrnfqrbl/sd/contents/nai-2.5d?ref=main')
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.content) {
-                // 获取文件的 Base64 编码内容
-                const base64Content = data.content;
-
-                // 解码 Base64 内容
-                const decodedContent = decodeBase64ToUTF8(base64Content);
-
-                // 解析内容并按标题和段落分类
-                const parsedContent = parseContent(decodedContent);
-
-                // 显示文件内容
-                document.getElementById('fileContent').innerHTML = `<h2>${data.name}</h2><div>${parsedContent}</div>`;
-            } else {
-                document.getElementById('fileContent').innerHTML = '文件未找到或内容为空。';
-            }
-        })
-        .catch(error => {
-            console.error('获取文件失败:', error);
-            document.getElementById('fileContent').innerHTML = '无法加载文件内容。';
-        });
-
-    // 解码 Base64 编码并正确解析为 UTF-8 格式
-    function decodeBase64ToUTF8(base64Str) {
-        const binaryData = atob(base64Str);  // 解码 Base64 内容为二进制字符串
-        const byteArray = new Uint8Array(binaryData.length);
-
-        // 将二进制数据转化为字节数组
-        for (let i = 0; i < binaryData.length; i++) {
-            byteArray[i] = binaryData.charCodeAt(i);
-        }
-
-        // 使用 TextDecoder 将字节数组解码为 UTF-8 字符串
-        const decoder = new TextDecoder('utf-8');
-        return decoder.decode(byteArray);
-    }
-
-    // 解析内容，按##、# 和段落分隔并赋予id
-    function parseContent(content) {
-        const lines = content.split('\n').filter(line => line.trim() !== '');
-
-        let parsedHTML = '';
-        let currentId = 1; // 用于生成唯一的ID
-
-        let currentSectionId = null;
-        let currentSubsectionId = null;
-
-        lines.forEach((line, index) => {
-            console.log(`解析行 ${index + 1}:`, line); // 打印当前行，便于调试
-
-            // 判断大标题 (##)，如果是以 ## 开头，不管后面是否有空格
-            if (line.startsWith('##')) {
-                // 添加大标题
-                parsedHTML += `<h2 id="section-${currentId}">${line.substring(2).trim()}</h2>`;
-                currentSectionId = currentId; // 记录当前大标题的ID
-                console.log(`大标题 (section-${currentId}):`, line.substring(2).trim());
-                currentId++; // 增加ID
-            }
-            // 判断小标题 (#)，如果是以 # 开头，不管后面是否有空格
-            else if (line.startsWith('#')) {
-                // 添加小标题和内容的容器
-                parsedHTML += `<div class="section-content">`;
-                parsedHTML += `<h3 id="subsection-${currentId}">${line.substring(1).trim()}</h3>`;
-                currentSubsectionId = currentId; // 记录当前小标题的ID
-                console.log(`小标题 (subsection-${currentId}):`, line.substring(1).trim());
-                currentId++; // 增加ID
-            }
-            // 判断普通段落内容
-            else {
-                if (currentSectionId && currentSubsectionId) {
-                    // 添加段落内容和代码框
-                    parsedHTML += `<div class="code-box">`;
-                    parsedHTML += `<pre id="paragraph-${currentId}">${line.trim()}</pre>`;
-                    parsedHTML += `<button class="copy-btn" onclick="copyToClipboard('paragraph-${currentId}')">复制</button>`;
-                    parsedHTML += `</div>`;
-                    console.log(`段落 (paragraph-${currentId}):`, line.trim());
-                    currentId++; // 增加ID
-                } else {
-                    console.log(`忽略无标题的段落:`, line.trim());
-                }
-            }
-        });
-
-        return parsedHTML;
-    }
-
-    // 复制文本到剪贴板并显示提示
-    function copyToClipboard(paragraphId) {
-        const textToCopy = document.getElementById(paragraphId).textContent;
-
-        // 创建一个临时文本区域来复制
-        const tempTextArea = document.createElement('textarea');
-        tempTextArea.value = textToCopy;
-        document.body.appendChild(tempTextArea);
-        tempTextArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempTextArea);
-
-        // 显示复制成功提示
-        const copySuccessElement = document.getElementById('copySuccess');
-        copySuccessElement.classList.add('show');
-
-        // 2秒后隐藏提示
-        setTimeout(() => {
-            copySuccessElement.classList.remove('show');
-        }, 2000);
-    }
-</script>
-
-</body>
+        // 将 <base> 标签添加到 <head> 中
+        document.head.appendChild(base);
+      });
+    </script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/mrnfqrbl/ComfyUI@master/web/user.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/mrnfqrbl/ComfyUI@master/web/materialdesignicons.min.css" />
+<!--    <script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/mrnfqrbl/ComfyUI@master/web/assets/index-DqqhYDnY.js"></script>-->
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/mrnfqrbl/ComfyUI@7c22ffd/web/assets/index-DqqhYDnY.js"></script>
+    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/mrnfqrbl/ComfyUI@master/web/assets/index-C1Hb_Yo9.css">
+  </head>
+  <body class="litegraph grid">
+    <div id="vue-app"></div>
+  </body>
 </html>
