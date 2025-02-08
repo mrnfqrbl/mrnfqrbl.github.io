@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js"
 import { ComfyDialog, $el } from "../../scripts/ui.js";
-import { manager_instance, rebootAPI, show_message } from  "./common.js";
+import { manager_instance, rebootAPI, show_message } from "./common.js";
 
 
 async function restore_snapshot(target) {

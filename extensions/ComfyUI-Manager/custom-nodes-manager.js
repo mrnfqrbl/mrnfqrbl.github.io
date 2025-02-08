@@ -5,7 +5,7 @@ import { api } from "../../scripts/api.js";
 import {
 	manager_instance, rebootAPI, install_via_git_url,
 	fetchData, md5, icons, show_message, customConfirm, customAlert, customPrompt, sanitizeHTML, infoToast
-} from  "./common.js";
+} from "./common.js";
 
 // https://cenfun.github.io/turbogrid/api.html
 import TG from "./turbogrid.esm.js";
